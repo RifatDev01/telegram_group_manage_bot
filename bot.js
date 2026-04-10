@@ -1,7 +1,25 @@
 const { Telegraf, Markup } = require('telegraf');
+const http = require('http');
 require('dotenv').config();
 
 const bot = new Telegraf(process.env.BOT_TOKEN);
+const appStartTime = Date.now();
+
+function formatUptime(ms) {
+  const totalSeconds = Math.floor(ms / 1000);
+  const days = Math.floor(totalSeconds / 86400);
+  const hours = Math.floor((totalSeconds % 86400) / 3600);
+  const minutes = Math.floor((totalSeconds % 3600) / 60);
+  const seconds = totalSeconds % 60;
+  const parts = [];
+
+  if (days) parts.push(`${days}d`);
+  if (hours) parts.push(`${hours}h`);
+  if (minutes) parts.push(`${minutes}m`);
+  parts.push(`${seconds}s`);
+
+  return parts.join(' ');
+}
 
 // ====== MASTER USER CONFIGURATION ======
 const MASTER_USER_ID = 6954490579; // Admin/Manager user
@@ -947,23 +965,120 @@ bot.catch((err, ctx) => {
   ctx.reply('❌ An error occurred. Please try again later.');
 });
 
-// Start the bot
-if (process.env.NODE_ENV === 'production') {
-  // Webhook mode for production (Render)
-  const PORT = process.env.PORT || 3000;
-  bot.launch({
-    webhook: {
-      domain: process.env.RENDER_EXTERNAL_URL || `https://your-app-name.onrender.com`,
-      port: PORT
+const PORT = process.env.PORT || 3000;
+const WEBHOOK_PATH = '/webhook';
+const externalUrl = process.env.RENDER_EXTERNAL_URL || process.env.WEBHOOK_URL || 'https://your-app-name.onrender.com';
+
+function sendStatusPage(res) {
+  const uptime = formatUptime(Date.now() - appStartTime);
+  const html = `<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bot Status</title>
+  <style>
+    body { margin: 0; font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; background: #f3f6ff; color: #1f2937; }
+    .page { min-height: 100vh; display: flex; align-items: center; justify-content: center; padding: 24px; }
+    .card { width: 100%; max-width: 620px; border-radius: 24px; background: #ffffff; box-shadow: 0 24px 64px rgba(15, 23, 42, 0.12); padding: 32px; text-align: center; }
+    .badge { display: inline-flex; align-items: center; justify-content: center; padding: 10px 18px; border-radius: 999px; background: #10b981; color: white; font-weight: 700; margin-bottom: 20px; }
+    h1 { margin: 0; font-size: 2rem; }
+    p { margin: 16px 0 0; font-size: 1rem; line-height: 1.75; }
+    footer { margin-top: 32px; color: #6b7280; font-size: 0.95rem; }
+  </style>
+</head>
+<body>
+  <div class="page">
+    <div class="card" data-start-time="${appStartTime}">
+      <div class="badge">Working</div>
+      <h1>Bot is online</h1>
+      <p>Running for: <strong id="uptime">${uptime}</strong></p>
+      <footer>Developed by MD RIFAT SARKER</footer>
+    </div>
+  </div>
+  <script>
+    function formatUptime(ms) {
+      const totalSeconds = Math.floor(ms / 1000);
+      const days = Math.floor(totalSeconds / 86400);
+      const hours = Math.floor((totalSeconds % 86400) / 3600);
+      const minutes = Math.floor((totalSeconds % 3600) / 60);
+      const seconds = totalSeconds % 60;
+      const parts = [];
+      if (days) parts.push(days + 'd');
+      if (hours) parts.push(hours + 'h');
+      if (minutes) parts.push(minutes + 'm');
+      parts.push(seconds + 's');
+      return parts.join(' ');
     }
-  });
-  console.log(`🤖 Bot started in webhook mode on port ${PORT}`);
-} else {
-  // Polling mode for development
-  bot.launch();
-  console.log('🤖 Bot started in polling mode...');
+
+    const uptimeEl = document.getElementById('uptime');
+    const startTime = Number(document.querySelector('.card').dataset.startTime) || Date.now();
+
+    setInterval(() => {
+      const elapsed = Date.now() - startTime;
+      uptimeEl.textContent = formatUptime(elapsed);
+    }, 1000);
+  </script>
+</body>
+</html>`;
+
+  res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+  res.end(html);
 }
 
+const server = http.createServer((req, res) => {
+  const requestUrl = new URL(req.url, `http://${req.headers.host}`);
+
+  if (requestUrl.pathname === '/') {
+    return sendStatusPage(res);
+  }
+
+  if (requestUrl.pathname === WEBHOOK_PATH && req.method === 'POST') {
+    let body = '';
+    req.on('data', (chunk) => { body += chunk; });
+    req.on('end', async () => {
+      try {
+        const update = JSON.parse(body || '{}');
+        await bot.handleUpdate(update, res);
+      } catch (error) {
+        console.error('Webhook request failure:', error);
+        res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+        res.end('Internal Server Error');
+      }
+    });
+    req.on('error', (error) => {
+      console.error('Request error:', error);
+      res.writeHead(500, { 'Content-Type': 'text/plain; charset=utf-8' });
+      res.end('Internal Server Error');
+    });
+    return;
+  }
+
+  res.writeHead(404, { 'Content-Type': 'text/plain; charset=utf-8' });
+  res.end('Not found');
+});
+
+server.listen(PORT, () => {
+  console.log(`🌐 HTTP status page available on port ${PORT}`);
+
+  if (process.env.NODE_ENV === 'production') {
+    const webhookUrl = `${externalUrl}${WEBHOOK_PATH}`;
+    bot.telegram.setWebhook(webhookUrl)
+      .then(() => console.log(`🤖 Webhook configured: ${webhookUrl}`))
+      .catch((err) => console.error('Webhook setup error:', err));
+  } else {
+    bot.launch()
+      .then(() => console.log('🤖 Bot started in polling mode...'))
+      .catch((err) => console.error('Bot launch error:', err));
+  }
+});
+
 // Graceful shutdown
-process.once('SIGINT', () => bot.stop('SIGINT'));
-process.once('SIGTERM', () => bot.stop('SIGTERM'));
+process.once('SIGINT', () => {
+  bot.stop('SIGINT');
+  server.close();
+});
+process.once('SIGTERM', () => {
+  bot.stop('SIGTERM');
+  server.close();
+});
