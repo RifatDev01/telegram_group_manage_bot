@@ -1,171 +1,182 @@
 # Telegram Group Management Bot
 
-A powerful Node.js bot for managing Telegram groups with features like banning, kicking, muting users, and issuing warnings.
+A powerful **Telegram Group Management Bot** built with Node.js.
+This bot helps administrators manage their Telegram groups efficiently with moderation tools like banning, kicking, muting users, and warning systems.
 
-## 🚀 Deploy to Render
+---
 
-### Step 1: Create Bot Token
-1. Go to [@BotFather](https://t.me/botfather) on Telegram
-2. Send `/newbot` and follow instructions
-3. Copy the bot token
+## ⚠️ License & Usage
 
-### Step 2: Deploy on Render
-1. Go to [Render.com](https://render.com) and sign up/login
-2. Click **"New +"** → **"Web Service"**
-3. Connect your GitHub repository (or upload files)
-4. Configure:
-   - **Name:** `telegram-group-bot`
-   - **Runtime:** `Node`
-   - **Build Command:** `npm install`
-   - **Start Command:** `npm start`
+This project is licensed under the MIT License.
 
-### Step 3: Set Environment Variables
-In Render dashboard, go to **Environment** and add:
+You are free to use this bot, but **you must give proper credit to the original author**.
+
+Author: **MD Rifat Sarkar**
+
+Unauthorized redistribution or selling of this bot without credit is not allowed.
+
+---
+
+# 🚀 Features
+
+### 👮 User Moderation
+
+* Ban users from group
+* Kick users instantly
+* Mute users temporarily
+* Warning system (Auto kick after 3 warnings)
+
+### 📊 Group Management
+
+* Welcome new members
+* Track member joins and leaves
+* Group rules command
+* Group settings system
+
+### ⚡ Easy Commands
+
+* Simple command based system
+* Reply based moderation
+* Fast response
+* Error handling included
+
+---
+
+# 📦 Requirements
+
+* Node.js v14 or higher
+* npm or yarn
+* Telegram Bot Token
+
+---
+
+# 🤖 Create Telegram Bot
+
+1. Open Telegram
+2. Search **@BotFather**
+3. Send command
+
+/newbot
+
+4. Follow instructions
+5. Copy your **BOT TOKEN**
+
+---
+
+# ⚙️ Installation
+
+Clone the repository:
+
 ```
-BOT_TOKEN=your_bot_token_here
-NODE_ENV=production
-RENDER_EXTERNAL_URL=https://your-app-name.onrender.com
+git clone https://github.com/yourusername/telegram_group_manage_bot.git
 ```
 
-### Step 4: Deploy
-Click **"Create Web Service"** and wait for deployment.
+Go to project folder:
 
-## Features
-
-✅ **User Management**
-- Ban users from groups
-- Kick users from groups
-- Mute users (silence for 1 hour)
-- Warning system (auto-kick after 3 warnings)
-
-✅ **Group Features**
-- Welcome new members
-- Track member departures
-- Store group settings
-- Display group rules
-
-✅ **Easy to Use**
-- Simple command-based interface
-- Inline keyboard support
-- Error handling
-
-## Requirements
-
-- Node.js (v14 or higher)
-- npm or yarn
-- A Telegram Bot Token (get from @BotFather)
-
-## Installation
-
-1. Clone or download this project:
-```bash
-cd /path/to/group
+```
+cd telegram_group_manage_bot
 ```
 
-2. Install dependencies:
-```bash
+Install dependencies:
+
+```
 npm install
 ```
 
-3. Create a `.env` file in the root directory:
-```bash
-cp .env.example .env
+---
+
+# 🔐 Environment Setup
+
+Create a `.env` file in the root directory.
+
+Example:
+
+```
+BOT_TOKEN=your_bot_token_here
+NODE_ENV=production
 ```
 
-4. Edit `.env` and add your bot token:
+---
+
+# ▶️ Run the Bot
+
+Development mode:
+
 ```
-BOT_TOKEN=your_token_here
-```
-
-## Getting Your Bot Token
-
-1. Open Telegram and search for **@BotFather**
-2. Send `/newbot`
-3. Follow the instructions to create a new bot
-4. Copy the token and paste it in your `.env` file
-
-## Running the Bot
-
-**Development mode (with auto-reload):**
-```bash
 npm run dev
 ```
 
-**Production mode:**
-```bash
+Production mode:
+
+```
 npm start
 ```
 
-## Available Commands
+---
 
-### User Management
-- `/ban` - Ban a user (reply to their message)
-- `/kick` - Kick a user (reply to their message)
-- `/mute` - Mute a user for 1 hour (reply to their message)
-- `/warn` - Warn a user (auto-kick after 3 warnings)
+# 📜 Available Commands
 
-### Group Info
-- `/help` - Show all available commands
-- `/settings` - View group settings
-- `/rules` - Display group rules
-- `/about` - About the bot
+### Moderation Commands
 
-## How to Use
+/ban – Ban a user
+/kick – Kick a user
+/mute – Mute a user for 1 hour
+/warn – Warn a user (Auto kick after 3 warnings)
+
+### Information Commands
+
+/help – Show help menu
+/settings – Group settings
+/rules – Show group rules
+/about – About this bot
+
+---
+
+# 👑 Bot Setup in Group
 
 1. Add the bot to your Telegram group
-2. Make the bot an **Administrator** with the following permissions:
-   - Delete messages
-   - Ban users
-   - Restrict users
-   - Manage messages
+2. Promote the bot as **Administrator**
+3. Enable permissions:
 
-3. Use commands by replying to messages:
-   - Reply to a user's message and type `/ban` to ban them
-   - Reply to a user's message and type `/kick` to kick them
-   - Reply to a user's message and type `/mute` to mute them
-   - Reply to a user's message and type `/warn` to warn them
+* Delete messages
+* Ban users
+* Restrict members
+* Manage messages
 
-## Project Structure
+---
+
+# 📁 Project Structure
 
 ```
-group/
-├── bot.js           # Main bot logic
-├── package.json     # Project dependencies
-├── .env             # Environment variables (create this)
-├── .env.example     # Example environment file
-└── README.md        # This file
+telegram-group-bot
+│
+├── bot.js
+├── package.json
+├── .env.example
+├── .env
+└── README.md
 ```
 
-## Database Integration (Optional)
+---
 
-Currently, the bot stores data in memory. For production use, consider integrating:
-- MongoDB
-- PostgreSQL
-- Redis
-- Firebase
+# 🛠 Future Improvements
 
-## Troubleshooting
+* Database support (MongoDB / PostgreSQL)
+* Dashboard panel
+* Anti-spam system
+* Auto moderation
+* Advanced logging
 
-### Bot doesn't respond
-- Ensure the bot token is correct
-- Check that the bot is added to the group
-- Verify the bot has admin permissions
+---
 
-### Commands don't work
-- Make sure the bot is an administrator in the group
-- Check that you're replying to a user's message when using moderation commands
-- Ensure required permissions are granted
+# 👨‍💻 Author
 
-## Contributing
+**MD Rifat Sarkar**
 
-Feel free to modify and enhance the bot with new features!
+Telegram: https://t.me/yourusername
 
-## License
+---
 
-ISC
+# ⭐ Support
 
-## Support
-
-For issues or questions, refer to:
-- [Telegraf Documentation](https://telegraf.js.org/)
-- [Telegram Bot API](https://core.telegram.org/bots/api)
+If you like this project, consider giving it a **star on GitHub**.
