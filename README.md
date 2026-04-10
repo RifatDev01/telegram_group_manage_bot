@@ -161,7 +161,7 @@ telegram-group-bot
 
 # 🛠 Future Improvements
 
-* Database support (MongoDB / PostgreSQL)
+* Database support (MySQL)
 * Dashboard panel
 * Anti-spam system
 * Auto moderation
