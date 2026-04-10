@@ -169,11 +169,3 @@ ISC
 For issues or questions, refer to:
 - [Telegraf Documentation](https://telegraf.js.org/)
 - [Telegram Bot API](https://core.telegram.org/bots/api)
-
-## ⚠️ Important Notes for Render Deployment
-
-- **Free Tier Limitations:** Render's free tier sleeps after 15 minutes of inactivity
-- **Data Storage:** Bot data is stored in memory only. Restart = data loss
-- **Database:** For persistent storage, add MongoDB/PostgreSQL later
-- **Webhook Mode:** Bot runs in webhook mode on Render (not polling)
-- **Domain Setup:** Replace `your-app-name.onrender.com` with your actual Render domain
